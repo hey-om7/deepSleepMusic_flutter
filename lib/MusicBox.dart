@@ -1,3 +1,4 @@
+import 'package:deep_sleep_music/playingSound.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -77,7 +78,12 @@ class MusicBox extends StatelessWidget {
               alignment: Alignment.bottomRight,
               child: GestureDetector(
                 onTap: () {
-                  print("clicked play");
+                  Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                      builder: (context) => PlayingSound(),
+                    ),
+                  );
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),

@@ -1,4 +1,5 @@
 import 'package:deep_sleep_music/home.dart';
+import 'package:deep_sleep_music/logo.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: Color(0xff0F143C),
-        body: Home(),
+        body: Logo(),
       ),
     );
   }
