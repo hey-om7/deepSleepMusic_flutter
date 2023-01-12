@@ -1,7 +1,9 @@
+import 'package:deep_sleep_music/gsheets.dart';
 import 'package:deep_sleep_music/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'globalVars.dart';
 
 class Logo extends StatefulWidget {
   const Logo({super.key});
@@ -15,13 +17,19 @@ class _LogoState extends State<Logo> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(
-        Duration(
-          seconds: 2,
-        ), () {
+    gsheetss().then((value) {
+      allSounds = value;
+      // print(allSounds);
       Navigator.pushReplacement(
           context, new MaterialPageRoute(builder: (context) => Home()));
     });
+    // Future.delayed(
+    //     Duration(
+    //       seconds: 2,
+    //     ), () {
+    //   Navigator.pushReplacement(
+    //       context, new MaterialPageRoute(builder: (context) => Home()));
+    // });
   }
 
   @override
@@ -35,7 +43,10 @@ class _LogoState extends State<Logo> {
               alignment: Alignment.bottomCenter,
               child: Opacity(
                 opacity: 0.4,
-                child: CircularProgressIndicator(),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(),
+                ),
               ),
             ),
             Align(

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:share_plus/share_plus.dart';
+import 'globalVars.dart';
+import 'logo.dart' as logodart;
 
 import 'MusicBox.dart';
+import 'playingSound.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -30,23 +34,41 @@ class Home extends StatelessWidget {
                     ),
                     Align(
                       alignment: Alignment.bottomRight,
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Image.asset(
-                          "assets/beginBtn.png",
-                          width: 120,
-                          height: 37,
+                      child: GestureDetector(
+                        onTap: () {
+                          finalSongUrl = allSounds[0];
+                          indexx = 0;
+                          Navigator.push(
+                            context,
+                            new MaterialPageRoute(
+                              builder: (context) => PlayingSound(),
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Image.asset(
+                            "assets/beginBtn.png",
+                            width: 120,
+                            height: 37,
+                          ),
                         ),
                       ),
                     ),
                     Align(
                       alignment: Alignment.bottomLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Image.asset(
-                          "assets/share.png",
-                          width: 34,
-                          height: 34,
+                      child: GestureDetector(
+                        onTap: () async {
+                          await Share.share(
+                              'Check out this cool app that helps your meditate and have a deep peaceful sleep. Download from this link: https://apps.apple.com/app/id1664670181');
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Image.asset(
+                            "assets/share.png",
+                            width: 34,
+                            height: 34,
+                          ),
                         ),
                       ),
                     ),
@@ -98,11 +120,12 @@ class Home extends StatelessWidget {
                 physics: ClampingScrollPhysics(),
                 crossAxisCount: 2,
                 children: [
-                  ...List.generate(20, (index) {
+                  ...List.generate(allSounds.length, (index) {
                     int _new1 = index % 4 + 1;
                     return MusicBox(
-                      new1: _new1,
+                      imageNum: _new1,
                       index: index,
+                      songUrl: allSounds[index],
                     );
                   }),
                 ],

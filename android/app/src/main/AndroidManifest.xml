@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.deep_sleep_music">
    <application
-        android:label="deep_sleep_music"
+        android:label="Deep Sleep"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
