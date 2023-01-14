@@ -12,34 +12,40 @@ class Logo extends StatefulWidget {
   State<Logo> createState() => _LogoState();
 }
 
+Future basicTasks() async {
+  List parallelFutures = await Future.wait([gsheetss(), updateDeviceDetails()]);
+  allSounds = parallelFutures[0];
+}
+
 class _LogoState extends State<Logo> {
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    gsheetss().then((value) {
-      allSounds = value;
-      // print(allSounds);
+    basicTasks().then((value) {
+      // allSounds = value;
       Navigator.pushReplacement(
           context, new MaterialPageRoute(builder: (context) => Home()));
     });
-    // Future.delayed(
-    //     Duration(
-    //       seconds: 2,
-    //     ), () {
-    //   Navigator.pushReplacement(
-    //       context, new MaterialPageRoute(builder: (context) => Home()));
-    // });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xff0F143C),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Align(
+      body: Stack(
+        children: [
+          Align(
+            alignment: Alignment.center,
+            child: Image.asset(
+              "assets/background_vectors.png",
+              height: double.infinity,
+              width: double.infinity,
+              fit: BoxFit.fill,
+            ),
+          ),
+          SafeArea(
+            child: Align(
               alignment: Alignment.bottomCenter,
               child: Opacity(
                 opacity: 0.4,
@@ -49,15 +55,17 @@ class _LogoState extends State<Logo> {
                 ),
               ),
             ),
-            Align(
+          ),
+          SafeArea(
+            child: Align(
               alignment: Alignment.center,
               child: Image.asset(
                 "assets/app-icon-rounded.png",
                 width: 175,
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }

@@ -1,4 +1,12 @@
+import 'dart:convert';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:gsheets/gsheets.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:public_ip/public_ip.dart' as publicIP;
+import 'dart:ui';
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:io';
 
 const _credintials = r'''
 {
@@ -23,4 +31,92 @@ Future<List<String>> gsheetss() async {
   var currentSheet = grabSpreadsheet.worksheetByTitle("Sounds");
   // await currentSheet!.values.appendRow(allDetails);
   return currentSheet!.values.column(3, fromRow: 2);
+}
+
+Future<String> loadAsset() async {
+  return await rootBundle.loadString('assets/iosDevices.txt');
+}
+
+class GetAppleDeviceModelName {
+  var identifier = new Map();
+  Future init() async {
+    String abra = await loadAsset();
+    LineSplitter ls = new LineSplitter();
+    List<String> lines = ls.convert(abra);
+
+    for (int i = 0; i < lines.length; i++) {
+      identifier[lines[i].split(":")[0].trim()] = lines[i].split(":")[1].trim();
+    }
+  }
+
+  Future getName(String name) async {
+    return identifier[name];
+  }
+}
+
+Future postData(List deviceDetails) async {
+  final gsheets = GSheets(_credintials);
+  final grabSpreadsheet = await gsheets.spreadsheet(_spreadsheetID);
+  var currentSheet = grabSpreadsheet.worksheetByTitle("Users");
+  //checking for previous stored data
+  List<String> allUsersUniqueId =
+      await currentSheet!.values.column(2, fromRow: 2);
+  if (allUsersUniqueId.contains(deviceDetails[1])) {
+    int ind = allUsersUniqueId.indexOf(deviceDetails[1]);
+
+    ind += 2;
+    List currentFetchedValues = await currentSheet.values.row(ind);
+
+    currentSheet.values.insertValue("${int.parse(currentFetchedValues[2]) + 1}",
+        column: 3, row: ind);
+    DateTime _now = DateTime.now();
+    var _temp1 = await NetworkInterface.list();
+
+    currentSheet.values
+        .insertValue('${_now.hour}:${_now.minute}', column: 4, row: ind);
+    currentSheet.values.insertValue(deviceDetails[6], column: 7, row: ind);
+    currentSheet.values.insertValue(deviceDetails[8], column: 9, row: ind);
+    currentSheet.values
+        .insertValue(_temp1[0].addresses[0].address, column: 10, row: ind);
+  } else {
+    var _temp1 = await NetworkInterface.list();
+    // deviceDetails.add(_temp1[0].addresses[0].address);
+    deviceDetails.insert(9, _temp1[0].addresses[0].address);
+    int currIndex = 0;
+    List<String>? _t2 = await currentSheet.values.lastRow();
+    if (_t2 != null) {
+      currIndex = int.parse(_t2[0]);
+    }
+    deviceDetails[0] = currIndex + 1;
+    return await currentSheet!.values.appendRow(deviceDetails);
+  }
+}
+
+Future updateDeviceDetails() async {
+  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+  var size = window.physicalSize;
+  GetAppleDeviceModelName getDeviceModel = GetAppleDeviceModelName();
+  await getDeviceModel.init();
+  DateTime _now = DateTime.now();
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  await postData([
+    1.toString(),
+    iosInfo.identifierForVendor.toString(),
+    1.toString(),
+    '${_now.hour}:${_now.minute}',
+    await getDeviceModel.getName(iosInfo.utsname.machine.toString()),
+    "${size.height.toInt()}x${size.width.toInt()}",
+    "${iosInfo.systemName}-${iosInfo.systemVersion}",
+    iosInfo.utsname.nodename.toString(),
+    "${packageInfo.version}-${packageInfo.buildNumber}",
+    iosInfo.name.toString(),
+    iosInfo.model.toString(),
+    iosInfo.localizedModel.toString(),
+
+    // await publicIP.getCountry(),
+    // await publicIP.getState(),
+    // await publicIP.getCity(),
+    // await publicIP.getTimeZone()
+  ]);
 }

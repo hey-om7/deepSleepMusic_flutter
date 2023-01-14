@@ -1,4 +1,3 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,6 +5,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'dart:async';
 import "globalVars.dart";
+import 'package:just_audio/just_audio.dart';
 
 class PlayingSound extends StatelessWidget {
   const PlayingSound({super.key});
@@ -33,15 +33,15 @@ Timer? t;
 class _PlayingSoundStfulState extends State<PlayingSoundStful> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    myAudioPlayer.play(UrlSource(finalSongUrl!));
+    myAudioPlayer.setUrl(finalSongUrl!);
+    myAudioPlayer.play();
     // timedTurnOff(3);
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    isPause = false;
     try {
       myAudioPlayer.stop();
     } catch (e) {
@@ -83,7 +83,6 @@ class _PlayingSoundStfulState extends State<PlayingSoundStful> {
                 timedTurnOff(index);
               },
               children: [
-                // Center(child: cupTxt("hello")),
                 ...List.generate(alltimes.length, (index) {
                   return Center(child: cupTxt(alltimes[index][0]));
                 }),
@@ -113,7 +112,7 @@ class _PlayingSoundStfulState extends State<PlayingSoundStful> {
           child: GestureDetector(
             onTap: () async {
               if (isPause) {
-                myAudioPlayer.play(UrlSource(finalSongUrl!));
+                myAudioPlayer.play();
               } else {
                 myAudioPlayer.pause();
               }
@@ -141,7 +140,10 @@ class _PlayingSoundStfulState extends State<PlayingSoundStful> {
                             onTap: () {
                               Navigator.pop(context);
                             },
-                            child: Image.asset("assets/back_btn.png"))),
+                            child: Image.asset(
+                              "assets/back_btn.png",
+                              width: 40,
+                            ))),
                     Align(
                       alignment: Alignment.center,
                       child: Text(
