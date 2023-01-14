@@ -6,6 +6,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'dart:async';
 import "globalVars.dart";
 import 'package:just_audio/just_audio.dart';
+import 'package:in_app_review/in_app_review.dart';
 
 class PlayingSound extends StatelessWidget {
   const PlayingSound({super.key});
@@ -40,7 +41,7 @@ class _PlayingSoundStfulState extends State<PlayingSoundStful> {
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     isPause = false;
     try {
       myAudioPlayer.stop();
@@ -52,7 +53,11 @@ class _PlayingSoundStfulState extends State<PlayingSoundStful> {
     } catch (e) {
       print("error cupertino dispose:$e");
     }
+    final InAppReview inAppReview = InAppReview.instance;
     super.dispose();
+    if (await inAppReview.isAvailable()) {
+      inAppReview.requestReview();
+    }
   }
 
   @override
